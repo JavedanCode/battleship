@@ -1,0 +1,42 @@
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#content {
+  display: flex;
+  gap: 40px;
+  align-items: center;
+}
+
+#player-board,
+#enemy-board {
+  display: grid;
+  grid-template-columns: repeat(10, 50px);
+  grid-template-rows: repeat(10, 50px);
+}
+
+.cell {
+  background-color: rgb(3, 3, 3);
+  border: 1px solid white;
+}
+
+.cell.ship {
+  background-color: gray;
+}
+
+.cell.hit {
+  background-color: red;
+}
+
+.cell.miss {
+  background-color: blue;
+}
+
+.cell.disabled {
+  pointer-events: none;
+  opacity: 0.7;
+}

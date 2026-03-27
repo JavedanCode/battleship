@@ -6,7 +6,10 @@ export default function gameboard() {
       const row = [];
 
       for (let j = 0; j < 10; j++) {
-        row.push(null);
+        row.push({
+          ship: null,
+          attacked: false,
+        });
       }
 
       board.push(row);
@@ -16,12 +19,29 @@ export default function gameboard() {
   }
 
   const board = createBoard();
-  let attacked = new Set();
-  let misses = new Set();
   let ships = new Set();
-  function placeShip(ship, x, y) {
-    board[x][y] = ship;
+
+  function placeShip(ship, x, y, direction) {
+    const length = ship.length;
+    const coords = [];
+
+    for (let i = 0; i < length; i++) {
+      const newX = direction === "vertical" ? x + i : x;
+      const newY = direction === "horizontal" ? y + i : y;
+
+      if (newX >= 10 || newY >= 10) return false;
+
+      if (board[newX][newY].ship) return false;
+
+      coords.push([newX, newY]);
+    }
+
+    coords.forEach(([cx, cy]) => {
+      board[cx][cy].ship = ship;
+    });
+
     ships.add(ship);
+    return true;
   }
 
   function allShipsSunk() {
@@ -29,22 +49,30 @@ export default function gameboard() {
   }
 
   function receiveAttack(x, y) {
-    if (attacked.has(`${x},${y}`)) {
+    const cell = board[x][y];
+
+    if (cell.attacked) {
       return "already hit";
     }
-    attacked.add(`${x},${y}`);
-    if (board[x][y] !== null) {
-      board[x][y].hit();
+
+    cell.attacked = true;
+
+    if (cell.ship) {
+      cell.ship.hit();
       return "hit";
     } else {
-      misses.add(`${x},${y}`);
       return "miss";
     }
+  }
+
+  function getBoard() {
+    return board;
   }
 
   return {
     placeShip,
     receiveAttack,
     allShipsSunk,
+    getBoard,
   };
 }

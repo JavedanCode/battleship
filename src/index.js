@@ -13,7 +13,7 @@ let shipsToPlace = [5, 4, 3, 3, 2];
 let currentShipIndex = 0;
 let direction = "horizontal";
 
-const controller = gameController();
+let controller = gameController();
 
 const content = renderLayout();
 document.body.appendChild(content);
@@ -27,10 +27,11 @@ setBoardContainer("enemy", enemyContainer);
 renderBoard("player");
 renderBoard("enemy");
 
-let gameStarted = false;
+let gameState = "placement";
 let aiTargets = [];
 
 onCellClickHandler("player", (x, y) => {
+  if (controller.isGameOver()) return;
   if (currentShipIndex >= shipsToPlace.length) return;
 
   const length = shipsToPlace[currentShipIndex];
@@ -39,8 +40,6 @@ onCellClickHandler("player", (x, y) => {
   const success = controller.player1.gameboard.placeShip(ship, x, y, direction);
 
   if (!success) return;
-
-  const board = controller.player1.gameboard.getBoard();
 
   for (let i = 0; i < length; i++) {
     const cx = direction === "vertical" ? x + i : x;
@@ -61,43 +60,47 @@ onCellClickHandler("player", (x, y) => {
     console.log("All ships placed. Game starts.");
 
     placeEnemyShips();
-    gameStarted = true;
+    gameState = "battle";
   }
 });
 
 onCellClickHandler("enemy", (x, y) => {
-  if (!gameStarted) return;
+  if (controller.isGameOver()) return;
+  if (gameState !== "battle") return;
   const result = controller.playTurn(x, y);
 
   if (result === "already hit") return;
 
   let board = controller.player2.gameboard.getBoard();
   let cellData = board[x][y];
+
   updateCell("enemy", x, y, cellData);
 
-  if (result === "gameover") console.log("Player wins!");
+  if (result === "gameover") {
+    gameState = "gameOver";
+    console.log("Player wins!");
+    return;
+  }
 
   const playerBoard = controller.player1.gameboard.getBoard();
 
-  let ex, ey;
+  let ex, ey, enemyResult;
 
-  if (aiTargets.length > 0) {
-    [ex, ey] = aiTargets.shift();
-  } else {
-    do {
+  do {
+    if (aiTargets.length > 0) {
+      [ex, ey] = aiTargets.shift();
+    } else {
       ex = Math.floor(Math.random() * 10);
       ey = Math.floor(Math.random() * 10);
-    } while (playerBoard[ex][ey].attacked);
-  }
+    }
 
-  const enemyResult = controller.playTurn(ex, ey);
+    enemyResult = controller.playTurn(ex, ey);
+  } while (enemyResult === "already hit");
+
+  if (enemyResult === "already hit") return;
 
   const playerCell = playerBoard[ex][ey];
 
-  if (enemyResult === "gameover") {
-    console.log("Enemy wins!");
-    return;
-  }
   updateCell("player", ex, ey, playerCell);
   if (enemyResult === "hit") {
     const directions = [
@@ -119,18 +122,12 @@ onCellClickHandler("enemy", (x, y) => {
       }
     });
   }
-});
 
-document.addEventListener("keydown", (e) => {
-  if (e.key.toLowerCase() === "r") {
-    direction = direction === "horizontal" ? "vertical" : "horizontal";
-    console.log("Direction:", direction);
+  if (enemyResult === "gameover") {
+    gameState = "gameover";
+    console.log("Enemy wins!");
+    return;
   }
-});
-
-document.getElementById("rotate-btn").addEventListener("click", () => {
-  direction = direction === "horizontal" ? "vertical" : "horizontal";
-  console.log("Direction:", direction);
 });
 
 function placeEnemyShips() {
@@ -150,3 +147,33 @@ function placeEnemyShips() {
     }
   });
 }
+
+function resetGame() {
+  controller = gameController();
+
+  currentShipIndex = 0;
+  direction = "horizontal";
+  gameState = "placement";
+  aiTargets = [];
+
+  renderBoard("player");
+  renderBoard("enemy");
+
+  console.log("Game reset");
+}
+
+// Event Listeners
+
+document.addEventListener("keydown", (e) => {
+  if (e.key.toLowerCase() === "r") {
+    direction = direction === "horizontal" ? "vertical" : "horizontal";
+    console.log("Direction:", direction);
+  }
+});
+
+document.getElementById("rotate-btn").addEventListener("click", () => {
+  direction = direction === "horizontal" ? "vertical" : "horizontal";
+  console.log("Direction:", direction);
+});
+
+document.getElementById("reset-btn").addEventListener("click", resetGame);

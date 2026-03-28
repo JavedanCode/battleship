@@ -1,5 +1,14 @@
-body {
+* {
+  box-sizing: border-box;
   margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #0f172a;
+  color: #e2e8f0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+
   min-height: 100vh;
   display: flex;
   justify-content: center;
@@ -8,35 +17,90 @@ body {
 
 #content {
   display: flex;
-  gap: 40px;
+  flex-direction: column;
   align-items: center;
+  gap: 25px;
+}
+
+#button-container {
+  display: flex;
+  gap: 15px;
+}
+
+button {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  background-color: #1e293b;
+  color: #e2e8f0;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  background-color: #334155;
+  transform: translateY(-1px);
+}
+
+button:active {
+  transform: scale(0.97);
 }
 
 #player-board,
 #enemy-board {
   display: grid;
-  grid-template-columns: repeat(10, 50px);
-  grid-template-rows: repeat(10, 50px);
+  grid-template-columns: repeat(10, 42px);
+  grid-template-rows: repeat(10, 42px);
+  gap: 3px;
+  padding: 12px;
+  background-color: #020617;
+  border-radius: 12px;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
+}
+
+#content > #player-board,
+#content > #enemy-board {
+  margin: 5px;
 }
 
 .cell {
-  background-color: rgb(3, 3, 3);
-  border: 1px solid white;
+  background-color: #020617;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.cell:hover {
+  background-color: #1e293b;
 }
 
 .cell.ship {
-  background-color: gray;
+  background-color: #475569;
 }
 
 .cell.hit {
-  background-color: red;
+  background-color: #ef4444;
+  box-shadow: 0 0 8px #ef4444;
 }
 
 .cell.miss {
-  background-color: blue;
+  background-color: #38bdf8;
 }
 
 .cell.disabled {
   pointer-events: none;
   opacity: 0.7;
+}
+
+.cell::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+}
+
+h1 {
+  font-size: 24px;
+  letter-spacing: 1px;
 }

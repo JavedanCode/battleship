@@ -46,20 +46,21 @@ export function renderBoard(key) {
 }
 
 export function updateCell(key, x, y, cellData) {
+  if (!cellData.attacked) return;
+
   const board = boards.get(key);
   if (!board) return;
 
   const { container } = board;
 
   const cellEl = container.querySelector(`[data-x="${x}"][data-y="${y}"]`);
-
   if (!cellEl) return;
 
   cellEl.classList.add("disabled");
 
-  if (cellData.attacked && cellData.ship) {
+  if (cellData.ship) {
     cellEl.classList.add("hit");
-  } else if (cellData.attacked && !cellData.ship) {
+  } else {
     cellEl.classList.add("miss");
   }
 }

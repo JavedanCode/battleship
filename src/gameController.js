@@ -18,7 +18,10 @@ export default function gameController() {
   }
 
   function playTurn(x, y) {
-    if (gameOver) return "game is already over!";
+    if (gameOver) {
+      console.log("game is already over");
+      return;
+    }
     let enemy;
     currentPlayer === player1 ? (enemy = player2) : (enemy = player1);
     const result = currentPlayer.attack(enemy.gameboard, x, y);
@@ -34,9 +37,14 @@ export default function gameController() {
     }
   }
 
+  function isGameOver() {
+    return gameOver;
+  }
+
   return {
     playTurn,
     player1,
     player2,
+    isGameOver,
   };
 }

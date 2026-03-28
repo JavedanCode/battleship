@@ -10,6 +10,10 @@ export default function renderLayout() {
   const rotateBtn = document.createElement("button");
   rotateBtn.textContent = "rotate";
   rotateBtn.id = "rotate-btn";
+  const resetBtn = document.createElement("button");
+  resetBtn.id = "reset-btn";
+  resetBtn.textContent = "Reset";
+  buttonContainer.appendChild(resetBtn);
   buttonContainer.appendChild(rotateBtn);
   content.appendChild(buttonContainer);
   content.appendChild(playerBoard);
